@@ -20,28 +20,25 @@ sub set_values{
 }
 sub get_values{
     my $self = shift;
-    return @{ $self->{values} };          # デリファレンス
+    return @{ $self->{values} };          # デリファレンス=>配列
 }
 sub sort{
     my $self = shift;
-    $self->{values} = [ qsort(@{ $self->{values} })]; # ソートして代入
+    $self->{values} = [ _sort(@{ $self->{values} })];
 }
-sub qsort{
-#    say "qsort",Dumper @_; #reference to array
-    say "qsort";
-    say Dumper @_;
+sub _sort{
+    # _sort : 配列を受け取る
     return () if not @_;
-    say "qsort2";
-    my $pivot = shift @_;
-    say "pivot: ",$pivot,' @_ ', Dumper @_;
+    my $pivot = shift;
+#    say "pivot: ",$pivot,' @_ ', Dumper @_;
     return ($pivot) if not (@_);
 
     my (@l,@r);
     foreach my $i (@_){
         ($i<=$pivot)? push(@l,$i) : push(@r,$i);
-    say "l:",@l," r:",@r;
+#    say "l:",@l," r:",@r;
     }
-    return (qsort(@l), $pivot, qsort(@r));
+    return (_sort(@l), $pivot, _sort(@r));
 }
 
 my $s = Sorter->new;
