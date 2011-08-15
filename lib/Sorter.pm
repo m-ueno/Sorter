@@ -1,86 +1,98 @@
 package Sorter;
 use strict;
 use warnings;
-
 sub new{
-#    bless {values=>[]},shift; #この1行で済ませられる
     my ($class) = @_;
-    bless {values=>[]}, $class;
+    bless { values=>[] }, $class;
 }
 sub set_values{
     my ($self, @nums) = @_;
-    $self->{values} = \@nums;           # [@nums]でも同じ
+    $self->{values} = \@nums;
     return $self;
 }
 sub get_values{
     my ($self) = @_;
-    return @{ $self->{values} };          # デリファレンス=>配列
+    return @{ $self->{values} };
 }
 sub sort{
-    my $self = shift;
-    $self->{values} = [ _sort(@{ $self->{values} })];
+    my ($self) = @_;
+    $self->{values} = $self->_sort( $self->{values} );
 }
 sub _sort{
-    return () if not @_;
-    my $pivot = shift;
+    # quicksort
+    my ($self,$nums) = @_;
+    return [] if not @$nums;
+    my $pivot = shift @$nums;
 
-    return ($pivot) if not (@_);
+    return [$pivot] if not @$nums;
 
     my (@l,@r);
-    foreach my $i (@_){
+    foreach my $i (@$nums) {
         ($i<=$pivot) ? push(@l,$i) : push(@r,$i);
     }
-    return( _sort(@l), $pivot, _sort(@r) );
+    return [ @{ $self->_sort([@l]) },
+             $pivot,
+             @{ $self->_sort([@r]) } ];
 }
-
+# ----------------
 package Sorter::BubbleSorter;
-our @ISA = qw(Sorter);  # メソッド探索が行われるようになる
+our @ISA = qw(Sorter);              # メソッド探索が行われるようになる
 sub _sort{
-    return () if not @_;
-    my @nums = @_;
-    for( my $i=0;$i<@nums;$i++ ){
-        for( my $j=$i;$j<@nums;$j++ ){
-            if( $nums[$i] > $nums[$j] ){
-                my $temp = $nums[$i];
-                $nums[$i] = $nums[$j];
-                $nums[$j] = $temp;
+    my ($self,$nums) = @_;
+    return [] if not @$nums;
+
+    my $len = @$nums;
+    my $temp;
+    for ( my $i=0;$i<$len;$i++ ) {
+        for ( my $j=$i;$j<$len;$j++ ) {
+            if ( $nums->[$i] > $nums->[$j] ) {
+                $temp = $nums->[$i];
+                $nums->[$i] = $nums->[$j];
+                $nums->[$j] = $temp;
             }
         }
     }
+    $nums;
 }
+# ----------------
 package Sorter::MergeSorter;
+use Data::Dumper;
 our @ISA = qw(Sorter);
-sub _sort{
-    my $len = length @_;
-    my $mid = int($len/2);
 
-    if( $len<=2 ){
-        my ($a,$b) = @_;
-        $a<$b ? return ($a,$b) : return ($b,$a);
+sub _sort{
+    my ($self,$nums) = @_;
+    my $len = @$nums;
+    my $mid = int($len/2);
+    if ( $len<=2 ) {                    # 1:(0) || 2:(0,1)
+        my ($a,$b) = @$nums;
+        defined $b and ($a<$b ? return [$a,$b] : return [$b,$a]); # $bがundefの場合に対応
+        defined $a and return [$a];
+        return [];
     }
-    _merge( _sort(@_[0..$mid]),
-            _sort(@_[$mid..$len-1]) )
+    _merge( $self->_sort( [@$nums[0..$mid]]    ),
+            $self->_sort( [@$nums[$mid+1..$len-1]] ));
 }
-sub _merge{                             # 配列2つ→配列1つ
-    my (@a,@b) = @_;
-    my @ret=();
-    my ($head_a, $head_b);
-    while(@a && @b){
-        return (@ret, @b) if not (@a);
-        return (@ret, @a) if not (@b);
-        $head_a ||= shift @a;
-        $head_b ||= shift @b;
-        if( $head_a<$head_b ){
-            push @ret,$head_a;
-            $head_a = shift @a;
-        }else{
-            push @ret,$head_b;
-            $head_b = shift @b;
+
+# _merge: 配列リファレンス2つ -> 配列リファレンス1つ
+sub _merge{
+    my ($a,$b) = @_;
+    my @ret = ();
+    my @a = @$a;                        # 疑問
+    my @b = @$b;
+
+    # merge部分
+    while (@a && @b) {
+        if( $a[0] < $b[0] ){
+            push( @ret, shift @a );
+        } else {
+            push( @ret, shift @b );
         }
     }
+    return [@ret, @b] if not @a;
+    return [@ret, @a] if not @b;
+    warn "error";
 }
-
-# ----------------------------------------------------------------
+# ----------------
 package Main;
 use strict;
 use warnings;
@@ -90,18 +102,25 @@ local $Data::Dumper::Indent = 1;
 local $Data::Dumper::Terse = 1;
 
 sub test{
-    say "Sorter::MergeSorter";
+    # say "Sorter";
+    # my $s = Sorter->new;
+
+    # say "BubbleSorter";
+    # my $s = Sorter::BubbleSorter->new;
+    say "MergeSorter";
     my $s = Sorter::MergeSorter->new;
 
-    $s->set_values(5,4,3,2,1,2,3,4,5);
+    $s->set_values();
+
     say Dumper "get_values", [$s->get_values()];
 
     $s->sort();
+    say Dumper "dbg_test", $s->{values};
 
     my @ans = $s->get_values();
     say Dumper "get_values(after)", [@ans];
 }
 
-#test();
+test();
 
 1;
