@@ -36,15 +36,14 @@ sub _sort{
 }
 # ----------------
 package Sorter::BubbleSorter;
-our @ISA = qw(Sorter);              # メソッド探索が行われるようになる
+our @ISA = qw(Sorter);
 sub _sort{
     my ($self,$nums) = @_;
     return [] if not @$nums;
 
-    my $len = @$nums;
     my $temp;
-    for ( my $i=0;$i<$len;$i++ ) {
-        for ( my $j=$i;$j<$len;$j++ ) {
+    for my $i (0..$#$nums){
+        for my $j ($i+1..$#$nums){
             if ( $nums->[$i] > $nums->[$j] ) {
                 $temp = $nums->[$i];
                 $nums->[$i] = $nums->[$j];
@@ -63,10 +62,12 @@ sub _sort{
     my ($self,$nums) = @_;
     my $len = @$nums;
     my $mid = int($len/2);
-    if ( $len<=2 ) {                    # 1:(0) || 2:(0,1)
+    if ( $len==2 ) {
         my ($a,$b) = @$nums;
-        defined $b and ($a<$b ? return [$a,$b] : return [$b,$a]); # $bがundefの場合に対応
-        defined $a and return [$a];
+        ($a<$b ? return [$a,$b] : return [$b,$a]);
+    }elsif( $len==1 ){
+        return $nums;                   #ref
+    }elsif( $len == 0 ){
         return [];
     }
     _merge( $self->_sort( [@$nums[0..$mid]]    ),
@@ -121,6 +122,6 @@ sub test{
     say Dumper "get_values(after)", [@ans];
 }
 
-test();
+#test();
 
 1;
