@@ -1,4 +1,3 @@
-# -*- cperl -*-
 package test::Sorter;
 use strict;
 use warnings;
@@ -8,6 +7,7 @@ use Sorter;
 
 sub init : Test(1) {
     new_ok 'Sorter::MergeSorter';
+    note ref Sorter::MergeSorter->new;
 }
 
 sub values : Tests {
@@ -24,7 +24,7 @@ sub values : Tests {
     is_deeply [$sorter->get_values], [1,2,3,4,5];
 }
 
-sub sort : Tests {
+sub mergesort : Tests {
     my $sorter = Sorter::MergeSorter->new;
     $sorter->sort;
     is_deeply [$sorter->get_values], [];

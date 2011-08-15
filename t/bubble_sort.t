@@ -6,12 +6,15 @@ use base qw(Test::Class);
 use Test::More;
 use Sorter;
 
-sub init : Test(1) {
+sub init : Test(2) {
     new_ok 'Sorter::BubbleSorter';
+    isa_ok (Sorter::BubbleSorter->new, 'Sorter::BubbleSorter');
+    note ref Sorter::BubbleSorter->new;
 }
 
 sub values : Tests {
     my $sorter = Sorter::BubbleSorter->new;
+    isa_ok $sorter, 'Sorter::BubbleSorter';
     is_deeply [$sorter->get_values], [];
 
     $sorter->set_values;
