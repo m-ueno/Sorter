@@ -68,6 +68,8 @@ sub _sort{
     }elsif( $len==1 ){
         return $nums;                   #ref
     }elsif( $len == 0 ){
+        return [];
+    }
     _merge( $self->_sort( [@$nums[0..$mid]]    ),
             $self->_sort( [@$nums[$mid+1..$len-1]] ));
 }
