@@ -93,35 +93,5 @@ sub _merge{
     return [@ret, @a] if not @b;
     warn "error";
 }
-# ----------------
-package Main;
-use strict;
-use warnings;
-use 5.10.0;
-use Data::Dumper;
-local $Data::Dumper::Indent = 1;
-local $Data::Dumper::Terse = 1;
-
-sub test{
-    # say "Sorter";
-    # my $s = Sorter->new;
-
-    # say "BubbleSorter";
-    # my $s = Sorter::BubbleSorter->new;
-    say "MergeSorter";
-    my $s = Sorter::MergeSorter->new;
-
-    $s->set_values();
-
-    say Dumper "get_values", [$s->get_values()];
-
-    $s->sort();
-    say Dumper "dbg_test", $s->{values};
-
-    my @ans = $s->get_values();
-    say Dumper "get_values(after)", [@ans];
-}
-
-test();
 
 1;
