@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use base qw(Test::Class);
 use Test::More;
-use Sorter;
+use Sorter::BubbleSorter;
 
 sub init : Test(2) {
     new_ok 'Sorter::BubbleSorter';

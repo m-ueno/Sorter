@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use base qw(Test::Class);
 use Test::More;
-use Sorter;
+use Sorter::MergeSorter;
 
 sub init : Test(1) {
     new_ok 'Sorter::MergeSorter';
